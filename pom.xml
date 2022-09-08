@@ -11,7 +11,8 @@
     <modules>
         <module>security</module>
         <module>shared-kernel</module>
-        <module>registration</module>
+        <module>freelancer</module>
+        <module>client</module>
     </modules>
 
     <properties>

@@ -5,11 +5,11 @@ import lombok.Getter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "app_users")
+@Table(name="app_users")
 @Getter
 public class AppUser {
     @Id
-    private String username;
+    private String email;
     private String name;
     private String surname;
     private String password;
@@ -21,11 +21,15 @@ public class AppUser {
 
     }
 
-    public AppUser(String username, String name, String surname, String password, Role role) {
-        this.username = username;
+    public AppUser(String email, String name, String surname, String password, Role role) {
+        this.email = email;
         this.name = name;
         this.surname = surname;
         this.password = password;
         this.role=role;
+    }
+    public void updateNameAndSurname(String name, String surname){
+        this.name=name;
+        this.surname=surname;
     }
 }

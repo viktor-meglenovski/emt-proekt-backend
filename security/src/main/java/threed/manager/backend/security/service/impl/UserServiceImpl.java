@@ -11,7 +11,9 @@ import threed.manager.backend.security.domain.exceptions.UserDoesNotExistExcepti
 import threed.manager.backend.security.domain.exceptions.UsernameAlreadyExistsException;
 import threed.manager.backend.security.domain.repository.UserRepository;
 import threed.manager.backend.security.service.UserService;
+import threed.manager.backend.sharedkernel.domain.events.account.ClientAccountEdited;
 import threed.manager.backend.sharedkernel.domain.events.account.ClientNewAccountCreated;
+import threed.manager.backend.sharedkernel.domain.events.account.FreelancerAccountEdited;
 import threed.manager.backend.sharedkernel.domain.events.account.FreelancerNewAccountCreated;
 import threed.manager.backend.sharedkernel.infra.DomainEventPublisher;
 
@@ -33,9 +35,9 @@ public class UserServiceImpl implements UserService {
         AppUser user = new AppUser(email,name,surname, passwordEncoder.encode(password), Role.valueOf(role));
         userRepository.save(user);
 
-        if(role=="CLIENT"){
+        if(role.equals("CLIENT")){
             domainEventPublisher.publish(new ClientNewAccountCreated(email,name,surname));
-        }else if(role=="FREELANCER"){
+        }else if(role.equals("FREELANCER")){
             domainEventPublisher.publish(new FreelancerNewAccountCreated(email,name,surname));
         }
 
@@ -47,6 +49,13 @@ public class UserServiceImpl implements UserService {
         AppUser accountToUpdate=findByEmail(email);
         accountToUpdate.updateNameAndSurname(name,surname);
         userRepository.save(accountToUpdate);
+
+        if(accountToUpdate.getRole().name().equals("CLIENT")){
+            domainEventPublisher.publish(new ClientAccountEdited(email,name,surname));
+        }else if(accountToUpdate.getRole().name().equals("FREELANCER")){
+            domainEventPublisher.publish(new FreelancerAccountEdited(email,name,surname));
+        }
+
         return accountToUpdate;
     }
 

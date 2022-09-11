@@ -22,5 +22,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/emt-project-freelancer</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="emt-project-project@localhost" uuid="1225cce5-0c2d-4827-8582-bc6957a5f39e">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/emt-project-project</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

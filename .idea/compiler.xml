@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="client" />
         <module name="shared-kernel" />
+        <module name="project" />
         <module name="security" />
         <module name="freelancer" />
       </profile>
@@ -20,6 +21,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="client" options="-parameters" />
       <module name="freelancer" options="-parameters" />
+      <module name="project" options="-parameters" />
       <module name="registration" options="-parameters" />
       <module name="security" options="-parameters" />
       <module name="shared-kernel" options="-parameters" />

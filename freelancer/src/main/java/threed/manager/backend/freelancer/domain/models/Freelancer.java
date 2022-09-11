@@ -16,7 +16,7 @@ public class Freelancer {
     private String email;
     private String name;
     private String surname;
-    @OneToMany
+    @OneToMany(mappedBy = "freelancer", fetch=FetchType.EAGER)
     private List<ExternalLink> externalLinks;
     private Rating rating;
 

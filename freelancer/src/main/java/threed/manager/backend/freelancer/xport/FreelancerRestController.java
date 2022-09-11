@@ -12,6 +12,7 @@ import threed.manager.backend.sharedkernel.security.JwtValidator;
 import java.util.List;
 
 @RestController("/api/freelancer")
+@CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
 public class FreelancerRestController {
 

@@ -1,6 +1,7 @@
 package threed.manager.backend.security.domain;
 
 import lombok.Getter;
+import threed.manager.backend.sharedkernel.domain.enumerations.Role;
 
 import javax.persistence.*;
 

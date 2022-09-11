@@ -16,8 +16,6 @@ import threed.manager.backend.security.service.AuthenticationService;
 import threed.manager.backend.security.service.UserService;
 import threed.manager.backend.sharedkernel.security.JwtValidator;
 
-import javax.persistence.EntityNotFoundException;
-
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")

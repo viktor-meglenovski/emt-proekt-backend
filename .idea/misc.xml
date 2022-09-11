@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/client/pom.xml" />
         <option value="$PROJECT_DIR$/freelancer/pom.xml" />
         <option value="$PROJECT_DIR$/shared-kernel/pom.xml" />
+        <option value="$PROJECT_DIR$/project/pom.xml" />
       </list>
     </option>
   </component>

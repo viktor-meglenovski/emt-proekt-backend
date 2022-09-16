@@ -11,8 +11,6 @@ import javax.persistence.ManyToOne;
 public class ExternalLink extends AbstractEntity<ExternalLinkId> {
 
     @ManyToOne
-    private Freelancer freelancer;
-    @ManyToOne
     private ExternalLinkName name;
     private String link;
 

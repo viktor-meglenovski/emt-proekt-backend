@@ -5,13 +5,16 @@ import io.jsonwebtoken.Jws;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import threed.manager.backend.freelancer.domain.models.ExternalLinkName;
 import threed.manager.backend.freelancer.domain.models.Freelancer;
+import threed.manager.backend.freelancer.service.ExternalLinkNameService;
 import threed.manager.backend.freelancer.service.FreelancerService;
 import threed.manager.backend.sharedkernel.security.JwtValidator;
 
 import java.util.List;
 
-@RestController("/api/freelancer")
+@RestController
+@RequestMapping("/api/freelancer")
 @CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
 public class FreelancerRestController {
@@ -42,7 +45,8 @@ public class FreelancerRestController {
     //rate by email
     @PostMapping("/rate")
     public Freelancer rateFreelancer(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                     String email, int grade){
+                                     @RequestParam String email,
+                                     @RequestParam int grade){
         JwtValidator.validateToken(token);
         freelancerService.rateByEmail(email,grade);
         return freelancerService.findByEmail(email);
@@ -52,7 +56,8 @@ public class FreelancerRestController {
     //add external link
     @PostMapping("/addExternalLink")
     public Freelancer addExternalLinkToFreelancer(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                            String externalLinkName, String link){
+                                                  @RequestParam String externalLinkName,
+                                                  @RequestParam String link){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         return freelancerService.addExternalLinkToFreelancer(jws.getBody().get("email").toString(),externalLinkName,link);
     }
@@ -60,10 +65,12 @@ public class FreelancerRestController {
     //remove external link
     @PostMapping("/removeExternalLink")
     public Freelancer removeExternalLinkToFreelancer(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                                     String externalLinkName){
+                                                     @RequestParam String externalLinkName){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         return freelancerService.removeExternalLinkFromFreelancer(jws.getBody().get("email").toString(),externalLinkName);
     }
+
+
 
 
 }

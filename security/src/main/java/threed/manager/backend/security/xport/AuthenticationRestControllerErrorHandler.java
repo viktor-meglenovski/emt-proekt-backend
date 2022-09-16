@@ -4,11 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import threed.manager.backend.security.domain.exceptions.ErrorHandler;
-import threed.manager.backend.security.domain.exceptions.InvalidUsernameOrPasswordException;
-import threed.manager.backend.security.domain.exceptions.PasswordsDoNotMatchException;
-import threed.manager.backend.security.domain.exceptions.UsernameAlreadyExistsException;
+import threed.manager.backend.security.domain.exceptions.*;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -37,6 +35,17 @@ public class AuthenticationRestControllerErrorHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity handleEntityNotFoundException(EntityNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidUserCredentialsException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ErrorHandler handleInvalidUserCredentialsException(InvalidUserCredentialsException e) {
+        return new ErrorHandler("Credentials");
+    }
+    @ExceptionHandler(EmptyNameOrSurnameException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ErrorHandler handleEmptyNameOrSurnameException(EmptyNameOrSurnameException e){
+        return new ErrorHandler("NameAndSurname");
     }
 
 

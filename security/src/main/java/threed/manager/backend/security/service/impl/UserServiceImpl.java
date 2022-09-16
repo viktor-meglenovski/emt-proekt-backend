@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import threed.manager.backend.security.domain.AppUser;
-import threed.manager.backend.security.domain.exceptions.InvalidUsernameOrPasswordException;
-import threed.manager.backend.security.domain.exceptions.PasswordsDoNotMatchException;
-import threed.manager.backend.security.domain.exceptions.UserDoesNotExistException;
-import threed.manager.backend.security.domain.exceptions.UsernameAlreadyExistsException;
+import threed.manager.backend.security.domain.exceptions.*;
 import threed.manager.backend.security.domain.repository.UserRepository;
 import threed.manager.backend.security.service.UserService;
 import threed.manager.backend.sharedkernel.domain.enumerations.Role;
@@ -46,6 +43,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AppUser editAccount(String email, String name, String surname) {
+        if (name==null || name.isEmpty()  || surname==null || surname.isEmpty())
+            throw new EmptyNameOrSurnameException();
         AppUser accountToUpdate=findByEmail(email);
         accountToUpdate.updateNameAndSurname(name,surname);
         userRepository.save(accountToUpdate);

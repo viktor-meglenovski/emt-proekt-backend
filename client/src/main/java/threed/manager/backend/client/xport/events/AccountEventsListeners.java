@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import threed.manager.backend.client.service.ClientService;
 import threed.manager.backend.sharedkernel.domain.config.TopicHolder;
 import threed.manager.backend.sharedkernel.domain.events.DomainEvent;
+import threed.manager.backend.sharedkernel.domain.events.account.ClientAccountEdited;
 import threed.manager.backend.sharedkernel.domain.events.account.ClientNewAccountCreated;
 
 @Service
@@ -27,7 +28,7 @@ public class AccountEventsListeners {
     @KafkaListener(topics= TopicHolder.TOPIC_CLIENT_ACCOUNT_EDITED,groupId = "threeDManager")
     public void consumeClientAccountEditedEvent(String jsonMessage){
         try{
-            ClientNewAccountCreated event= DomainEvent.fromJson(jsonMessage, ClientNewAccountCreated.class);
+            ClientAccountEdited event= DomainEvent.fromJson(jsonMessage, ClientAccountEdited.class);
             clientService.editClient(event.getEmail(),event.getName(),event.getSurname());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

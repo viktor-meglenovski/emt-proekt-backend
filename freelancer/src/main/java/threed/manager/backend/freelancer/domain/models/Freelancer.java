@@ -16,7 +16,7 @@ public class Freelancer {
     private String email;
     private String name;
     private String surname;
-    @OneToMany(mappedBy = "freelancer", fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,fetch=FetchType.EAGER)
     private List<ExternalLink> externalLinks;
     private Rating rating;
 
@@ -32,7 +32,7 @@ public class Freelancer {
         this.rating=new Rating();
     }
     public ExternalLink checkIfExternalLinkExists(ExternalLinkName externalLinkName){
-        return this.getExternalLinks().stream().filter(x->x.getName().equals(externalLinkName.getName())).findFirst().orElse(null);
+        return this.getExternalLinks().stream().filter(x->x.getName().getName().equals(externalLinkName.getName())).findFirst().orElse(null);
     }
     public void addExternalLink(ExternalLinkName externalLinkName, String link){
         if(checkIfExternalLinkExists(externalLinkName)==null){
@@ -42,7 +42,7 @@ public class Freelancer {
     }
     public void removeExternalLink(ExternalLinkName externalLinkName){
         if(checkIfExternalLinkExists(externalLinkName)!=null){
-            this.externalLinks.removeIf(x->x.getName().equals(externalLinkName.getName()));
+            this.externalLinks.removeIf(x->x.getName().getName().equals(externalLinkName.getName()));
         }
     }
     public void rateFreelancer(Integer newGrade){

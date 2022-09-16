@@ -30,6 +30,7 @@ public class FreelancerServiceImpl implements FreelancerService {
     public Freelancer rateByEmail(String email, int grade) {
         Freelancer freelancer=findByEmail(email);
         freelancer.rateFreelancer(grade);
+        freelancerRepository.save(freelancer);
         return freelancer;
     }
 
@@ -38,6 +39,7 @@ public class FreelancerServiceImpl implements FreelancerService {
         Freelancer freelancer=findByEmail(email);
         ExternalLinkName extLinkName=externalLinkNameRepository.findById(externalLinkName).get();
         freelancer.addExternalLink(extLinkName,link);
+        freelancerRepository.save(freelancer);
         return freelancer;
     }
     @Override
@@ -45,6 +47,7 @@ public class FreelancerServiceImpl implements FreelancerService {
         Freelancer freelancer=findByEmail(email);
         ExternalLinkName extLinkName=externalLinkNameRepository.findById(externalLinkName).get();
         freelancer.removeExternalLink(extLinkName);
+        freelancerRepository.save(freelancer);
         return freelancer;
     }
 

@@ -43,6 +43,7 @@ public class ClientServiceImpl implements ClientService {
     public Client editClient(String email, String name, String surname) {
         Client client=findByEmail(email);
         client.editNameAndSurname(name,surname);
+        clientRepository.save(client);
         return client;
     }
 
@@ -50,6 +51,7 @@ public class ClientServiceImpl implements ClientService {
     public Client editClientCompanyName(String email, String company) {
         Client client=findByEmail(email);
         client.updateCompanyName(company);
+        clientRepository.save(client);
         return client;
     }
 }

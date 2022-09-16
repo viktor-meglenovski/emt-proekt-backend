@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/project")
 @CrossOrigin(origins = "http://localhost:3000")
 @AllArgsConstructor
 public class ProjectRestController {
     private final ProjectService projectService;
 
     //get project by ID
-    @GetMapping("/project")
+    @GetMapping("/{id}")
     public Project getProjectById(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @PathVariable String id){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         Project project=projectService.findByProjectId(id);
@@ -47,7 +47,8 @@ public class ProjectRestController {
 
     //get projects by token user information and project status
     @GetMapping("/myProjectsByStatus")
-    public List<Project> getMyProjects(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, String projectStatus){
+    public List<Project> getMyProjects(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                       @RequestParam String projectStatus){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         if(jws.getBody().get("role").equals(Role.CLIENT))
             return projectService.findAllByClientEmailAndProjectStatus(jws.getBody().get("email").toString(),projectStatus);
@@ -63,8 +64,7 @@ public class ProjectRestController {
                                     @RequestParam String name,
                                     @RequestParam String description,
                                     @RequestParam LocalDateTime dueDateTime,
-                                    @RequestParam String freelancerEmail
-                                    ){
+                                    @RequestParam String freelancerEmail){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         if(jws.getBody().get("role").equals("CLIENT")){
             return projectService.createNewProject(name,description,dueDateTime,jws.getBody().get("email").toString(),freelancerEmail);
@@ -72,6 +72,7 @@ public class ProjectRestController {
     }
 
     //accept/decline the project proposal (for freelancers only)
+    @PostMapping("/answerProposal")
     public Project answerProposal(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                   @RequestParam String projectId,
                                   @RequestParam ProjectStatusEnumeration freelancerAnswer){

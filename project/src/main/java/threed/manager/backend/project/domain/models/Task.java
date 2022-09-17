@@ -18,6 +18,6 @@ public class Task extends AbstractEntity<TaskId> {
     private TaskStatusEnumeration taskStatus;
     @ManyToOne
     private Project project;
-    @OneToMany(mappedBy="task", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="task", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DiscussionEntry> discussionEntries;
 }

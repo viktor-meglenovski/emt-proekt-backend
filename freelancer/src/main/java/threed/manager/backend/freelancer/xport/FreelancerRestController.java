@@ -31,7 +31,12 @@ public class FreelancerRestController {
     //find by email
     @GetMapping("/findByEmail")
     public Freelancer findByEmail(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @RequestParam String email){
-        JwtValidator.validateToken(token);
+        //JwtValidator.validateToken(token);
+        return freelancerService.findByEmail(email);
+    }
+
+    @GetMapping("/findByEmailApi/{email}")
+    public Freelancer findByEmailApi(@PathVariable String email){
         return freelancerService.findByEmail(email);
     }
 

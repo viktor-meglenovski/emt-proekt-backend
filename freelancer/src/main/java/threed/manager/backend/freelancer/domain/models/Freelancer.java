@@ -1,6 +1,8 @@
 package threed.manager.backend.freelancer.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import threed.manager.backend.sharedkernel.domain.enumerations.Role;
 import threed.manager.backend.sharedkernel.value_objects.Rating;
 
 import javax.persistence.*;
@@ -16,8 +18,11 @@ public class Freelancer {
     private String email;
     private String name;
     private String surname;
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,fetch=FetchType.EAGER)
+    @JsonIgnoreProperties(value = {"freelancer"})
+    @OneToMany(mappedBy="freelancer",fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExternalLink> externalLinks;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
     private Rating rating;
 
     public Freelancer(String email, String name, String surname) {
@@ -26,17 +31,19 @@ public class Freelancer {
         this.surname = surname;
         this.externalLinks=new ArrayList<>();
         this.rating=new Rating();
+        this.role=Role.FREELANCER;
     }
     public Freelancer(){
         this.externalLinks=new ArrayList<>();
         this.rating=new Rating();
+        this.role=Role.FREELANCER;
     }
     public ExternalLink checkIfExternalLinkExists(ExternalLinkName externalLinkName){
         return this.getExternalLinks().stream().filter(x->x.getName().getName().equals(externalLinkName.getName())).findFirst().orElse(null);
     }
     public void addExternalLink(ExternalLinkName externalLinkName, String link){
         if(checkIfExternalLinkExists(externalLinkName)==null){
-            this.externalLinks.add(new ExternalLink(externalLinkName,link));
+            this.externalLinks.add(new ExternalLink(externalLinkName,link,this));
         }
 
     }

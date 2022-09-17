@@ -1,9 +1,12 @@
 package threed.manager.backend.client.domain.models;
 
 import lombok.Getter;
+import threed.manager.backend.sharedkernel.domain.enumerations.Role;
 import threed.manager.backend.sharedkernel.value_objects.Rating;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +21,19 @@ public class Client {
     private String company;
     private Rating rating;
 
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
     public Client(String email, String name, String surname) {
         this.email = email;
         this.name = name;
         this.surname = surname;
         this.rating=new Rating();
+        this.role=Role.CLIENT;
     }
     public Client(){
         this.rating=new Rating();
+        this.role=Role.CLIENT;
     }
     public void rateClient(Integer newGrade){
         List<Integer> existingGrades=this.rating.getGrades();

@@ -2,19 +2,31 @@ package threed.manager.backend.project.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import threed.manager.backend.project.domain.enumerations.ProjectStatusEnumeration;
 import threed.manager.backend.project.domain.models.Project;
+import threed.manager.backend.project.domain.models.ProjectAttachment;
 import threed.manager.backend.project.domain.models.ids.ProjectId;
 import threed.manager.backend.project.domain.repository.ProjectRepository;
+import threed.manager.backend.project.domain.value_objects.AppUser;
 import threed.manager.backend.project.service.ProjectService;
+import threed.manager.backend.project.xport.rest.ClientRestClient;
+import threed.manager.backend.project.xport.rest.FreelancerRestClient;
 
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
+    public static final String userRootPath ="project//src//main//resources//static//projects//";
     private final ProjectRepository projectRepository;
+    private final FreelancerRestClient freelancerRestClient;
+    private final ClientRestClient clientRestClient;
     @Override
     public List<Project> findAllByClientEmail(String email) {
         return projectRepository.findAllByClient_Email(email);
@@ -51,8 +63,32 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project createNewProject(String name, String description, LocalDateTime dueDateTime, String clientEmail, String freelancerEmail) {
-        Project p=Project.build(name,description,dueDateTime,clientEmail,freelancerEmail);
+    public Project createNewProject(String name, String description, Date dueDate, MultipartFile[] attachments,String clientEmail, String freelancerEmail) {
+        AppUser freelancer=freelancerRestClient.findFreelancer(freelancerEmail);
+        AppUser client=clientRestClient.findClient(clientEmail);
+
+        Project p=Project.build(name,description,dueDate,client,freelancer);
+
+        //create a new folder for the project
+        File f=new File(userRootPath +p.getId().getId()+"_"+p.getName().replace(" ","_"));
+        f.mkdir();
+        p.updateFolderLocation(userRootPath +p.getId().getId()+"_"+p.getName().replace(" ","_"));
+
+        //save the attachments
+        if(attachments.length>0){
+            Arrays.stream(attachments).forEach(attachment->{
+                ProjectAttachment projectAttachment= null;
+                try {
+                    projectAttachment = ProjectAttachment.saveAttachment(attachment,
+                            userRootPath+p.getId().getId()+"_"+p.getName().replace(" ","_")+"/"+attachment.getOriginalFilename(),
+                            userRootPath+p.getId().getId()+"_"+p.getName().replace(" ","_")+"/"+attachment.getOriginalFilename(),p);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                p.addAttachment(projectAttachment);
+            });
+
+        }
         projectRepository.save(p);
         return p;
     }

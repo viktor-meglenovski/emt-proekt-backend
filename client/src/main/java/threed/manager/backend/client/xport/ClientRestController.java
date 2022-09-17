@@ -33,6 +33,11 @@ public class ClientRestController {
         return clientService.findByEmail(email);
     }
 
+    @GetMapping("/findByEmailApi/{email}")
+    public Client findByEmailApi(@PathVariable String email){
+        return clientService.findByEmail(email);
+    }
+
     //find by token
     @GetMapping("/findByToken")
     public Client findByToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token){

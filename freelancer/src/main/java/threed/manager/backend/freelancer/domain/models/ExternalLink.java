@@ -13,13 +13,16 @@ public class ExternalLink extends AbstractEntity<ExternalLinkId> {
     @ManyToOne
     private ExternalLinkName name;
     private String link;
+    @ManyToOne
+    private Freelancer freelancer;
 
     protected ExternalLink(){
         super(ExternalLinkId.randomId(ExternalLinkId.class));
     }
-    protected ExternalLink(ExternalLinkName name, String link){
+    protected ExternalLink(ExternalLinkName name, String link, Freelancer freelancer){
         super(ExternalLinkId.randomId(ExternalLinkId.class));
         this.name=name;
         this.link=link;
+        this.freelancer=freelancer;
     }
 }

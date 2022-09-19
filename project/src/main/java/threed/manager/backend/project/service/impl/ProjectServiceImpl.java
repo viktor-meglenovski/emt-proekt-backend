@@ -6,24 +6,29 @@ import org.springframework.web.multipart.MultipartFile;
 import threed.manager.backend.project.domain.enumerations.ProjectStatusEnumeration;
 import threed.manager.backend.project.domain.models.Project;
 import threed.manager.backend.project.domain.models.ProjectAttachment;
+import threed.manager.backend.project.domain.models.Task;
 import threed.manager.backend.project.domain.models.ids.ProjectId;
 import threed.manager.backend.project.domain.repository.ProjectRepository;
 import threed.manager.backend.project.domain.value_objects.AppUser;
 import threed.manager.backend.project.service.ProjectService;
+import threed.manager.backend.project.service.TaskService;
 import threed.manager.backend.project.xport.rest.ClientRestClient;
 import threed.manager.backend.project.xport.rest.FreelancerRestClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static threed.manager.backend.project.config.Constants.userRootPath;
+
 @Service
 @AllArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
-    public static final String userRootPath ="project//src//main//resources//static//projects//";
+
+
+    private final TaskService taskService;
     private final ProjectRepository projectRepository;
     private final FreelancerRestClient freelancerRestClient;
     private final ClientRestClient clientRestClient;
@@ -39,12 +44,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<Project> findAllByClientEmailAndProjectStatus(String email, String projectStatus) {
-        return projectRepository.findAllByClient_EmailAndStatus_ProjectStatusEnumeration(email, ProjectStatusEnumeration.valueOf(projectStatus));
+        return projectRepository.findAllByClient_EmailAndStatus(email, ProjectStatusEnumeration.valueOf(projectStatus));
     }
 
     @Override
     public List<Project> findAllByFreelancerEmailAndProjectStatus(String email, String projectStatus) {
-        return projectRepository.findAllByFreelancer_EmailAndStatus_ProjectStatusEnumeration(email, ProjectStatusEnumeration.valueOf(projectStatus));
+        return projectRepository.findAllByFreelancer_EmailAndStatus(email, ProjectStatusEnumeration.valueOf(projectStatus));
     }
 
     @Override
@@ -75,13 +80,11 @@ public class ProjectServiceImpl implements ProjectService {
         p.updateFolderLocation(userRootPath +p.getId().getId()+"_"+p.getName().replace(" ","_"));
 
         //save the attachments
-        if(attachments.length>0){
+        if(attachments!=null){
             Arrays.stream(attachments).forEach(attachment->{
                 ProjectAttachment projectAttachment= null;
                 try {
-                    projectAttachment = ProjectAttachment.saveAttachment(attachment,
-                            userRootPath+p.getId().getId()+"_"+p.getName().replace(" ","_")+"/"+attachment.getOriginalFilename(),
-                            userRootPath+p.getId().getId()+"_"+p.getName().replace(" ","_")+"/"+attachment.getOriginalFilename(),p);
+                    projectAttachment = ProjectAttachment.saveAttachment(attachment, userRootPath+p.getId().getId()+"_"+p.getName().replace(" ","_")+"/"+attachment.getOriginalFilename(), p);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -93,12 +96,27 @@ public class ProjectServiceImpl implements ProjectService {
         return p;
     }
 
+
     @Override
-    public Project changeProjectStatus(Project p, String freelancerEmail, ProjectStatusEnumeration newStatus) {
-        if(isFreelancer(p,freelancerEmail)){
-            p.changeStatus(newStatus);
-            projectRepository.save(p);
-        }
+    public Project changeStatus(Project p, ProjectStatusEnumeration status) {
+        p.changeStatus(status);
+        projectRepository.save(p);
         return p;
     }
+
+    @Override
+    public Project addNewTask(Project p, String taskTitle) {
+        taskService.addNewTaskToProject(p, taskTitle);
+        projectRepository.save(p);
+        return p;
+    }
+
+    @Override
+    public Task addNewMessageToTask(Project p, String taskId, String email, String role, String content, MultipartFile[] messageAttachments) {
+        Task task=p.getProjectTasks().stream().filter(x->x.getId().getId().equals(taskId)).findFirst().get();
+        taskService.addMessageToTask(task, email, role, content, messageAttachments);
+        projectRepository.save(p);
+        return task;
+    }
+
 }

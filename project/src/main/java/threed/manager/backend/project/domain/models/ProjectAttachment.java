@@ -30,12 +30,12 @@ public class ProjectAttachment extends AbstractEntity<ProjectAttachmentId> {
         this.project=project;
     }
 
-    public static ProjectAttachment saveAttachment(MultipartFile file, String path, String location,Project project) throws IOException {
+    public static ProjectAttachment saveAttachment(MultipartFile file, String path,Project project) throws IOException {
         byte[] bytes = new byte[0];
         bytes = file.getBytes();
         Path p = Paths.get(path);
         Files.write(p, bytes);
-        return new ProjectAttachment(location,file.getOriginalFilename(),project);
+        return new ProjectAttachment(path,file.getOriginalFilename(),project);
 
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import threed.manager.backend.project.domain.enumerations.ProjectStatusEnumeration;
 import threed.manager.backend.project.domain.models.Project;
+import threed.manager.backend.project.domain.models.Task;
 import threed.manager.backend.project.service.ProjectService;
 import threed.manager.backend.sharedkernel.domain.enumerations.Role;
 import threed.manager.backend.sharedkernel.security.JwtValidator;
@@ -90,15 +91,27 @@ public class ProjectRestController {
     }
 
     //accept/decline the project proposal (for freelancers only)
-    @PostMapping("/answerProposal")
-    public Project answerProposal(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                  @RequestParam String projectId,
-                                  @RequestParam ProjectStatusEnumeration freelancerAnswer){
+    @PostMapping("/acceptProposal")
+    public Project acceptProposal(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                  @RequestParam String projectId){
         Jws<Claims> jws = JwtValidator.validateToken(token);
         if(jws.getBody().get("role").equals("FREELANCER")){
             Project p=projectService.findByProjectId(projectId);
-            return projectService.changeProjectStatus(p,jws.getBody().get("email").toString(),freelancerAnswer);
+            if(p.isFreelancerForProject(jws.getBody().get("email").toString())){
+                return projectService.changeStatus(p,ProjectStatusEnumeration.ACCEPTED);
+            }else throw new NotAuthorisedAccessException();
+
         }else throw new NotAuthorisedAccessException();
+    }
+    @PostMapping("/declineProposal")
+    public Project declineProposal(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                   @RequestParam String projectId){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if(p.isFreelancerForProject(jws.getBody().get("email").toString()) || p.isClientForProject(jws.getBody().get("email").toString())){
+            return projectService.changeStatus(p, ProjectStatusEnumeration.CANCELED);
+        }
+        else throw new NotAuthorisedAccessException();
     }
 
     @GetMapping("/downloadFile")
@@ -112,5 +125,29 @@ public class ProjectRestController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .contentLength(file.length())
                 .body(resource);
+    }
+    @PostMapping("/addTask")
+    public Project addNewTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                              @RequestParam String projectId,
+                              @RequestParam String taskTitle){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        if(jws.getBody().get("role").equals("FREELANCER")){
+            Project p=projectService.findByProjectId(projectId);
+            if (p.isFreelancerForProject(jws.getBody().get("email").toString())){
+                return projectService.addNewTask(p,taskTitle);
+            }else throw new NotAuthorisedAccessException();
+        }else throw new NotAuthorisedAccessException();
+    }
+    @PostMapping("/addMessageToTask")
+    public Task addMessageToTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                 @RequestParam String projectId,
+                                 @RequestParam String taskId,
+                                 @RequestParam String content,
+                                 @RequestParam("messageAttachments") @Nullable MultipartFile[] messageAttachments){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if (p.isFreelancerForProject(jws.getBody().get("email").toString()) || p.isClientForProject(jws.getBody().get("email").toString())){
+            return projectService.addNewMessageToTask(p, taskId, jws.getBody().get("email").toString(), jws.getBody().get("role").toString(), content, messageAttachments);
+        }else throw new NotAuthorisedAccessException();
     }
 }

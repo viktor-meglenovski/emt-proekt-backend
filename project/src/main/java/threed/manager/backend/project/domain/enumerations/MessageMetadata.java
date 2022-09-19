@@ -1,8 +1,8 @@
 package threed.manager.backend.project.domain.enumerations;
 
-public enum TaskStatusEnumeration {
-    STARTED,
+public enum MessageMetadata {
+    NONE,
     DELIVERED,
-    IN_REVISION,
+    REVISION,
     ACCEPTED
 }

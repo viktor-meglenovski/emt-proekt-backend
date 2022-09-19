@@ -12,6 +12,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, ProjectId> {
     List<Project> findAllByClient_Email(String email);
     List<Project> findAllByFreelancer_Email(String email);
-    List<Project> findAllByClient_EmailAndStatus_ProjectStatusEnumeration(String email, ProjectStatusEnumeration enumeration);
-    List<Project> findAllByFreelancer_EmailAndStatus_ProjectStatusEnumeration(String email, ProjectStatusEnumeration enumeration);
+    List<Project> findAllByClient_EmailAndStatus(String email, ProjectStatusEnumeration enumeration);
+    List<Project> findAllByFreelancer_EmailAndStatus(String email, ProjectStatusEnumeration enumeration);
 }

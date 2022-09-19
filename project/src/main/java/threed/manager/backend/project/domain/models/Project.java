@@ -5,7 +5,6 @@ import lombok.Getter;
 import threed.manager.backend.project.domain.enumerations.ProjectStatusEnumeration;
 import threed.manager.backend.project.domain.models.ids.ProjectId;
 import threed.manager.backend.project.domain.value_objects.AppUser;
-import threed.manager.backend.project.domain.value_objects.ProjectStatus;
 import threed.manager.backend.sharedkernel.domain.base.AbstractEntity;
 
 import javax.persistence.*;
@@ -20,7 +19,7 @@ public class Project extends AbstractEntity<ProjectId> {
     private Date dueDate;
     @Enumerated(value = EnumType.STRING)
     @Column(name="projectStatus")
-    private ProjectStatus status;
+    private ProjectStatusEnumeration status;
     private String folderLocation;
 
     @AttributeOverrides({
@@ -52,7 +51,7 @@ public class Project extends AbstractEntity<ProjectId> {
         p.name=name;
         p.description=description;
         p.dueDate=dueDate;
-        p.status=new ProjectStatus(ProjectStatusEnumeration.PROPOSED);
+        p.status=ProjectStatusEnumeration.PROPOSED;
         p.client=client;
         p.freelancer=freelancer;
         p.projectTasks=new HashSet<>();
@@ -60,7 +59,7 @@ public class Project extends AbstractEntity<ProjectId> {
         return p;
     }
     public void changeStatus(ProjectStatusEnumeration newStatus){
-        this.status.changeStatus(newStatus);
+        this.status=newStatus;
     }
     public void updateFolderLocation(String folderLocation){
         this.folderLocation=folderLocation;
@@ -68,5 +67,15 @@ public class Project extends AbstractEntity<ProjectId> {
     public void addAttachment(ProjectAttachment projectAttachment){
         this.attachments.add(projectAttachment);
     }
-
+    public boolean isFreelancerForProject(String freelancerEmail){
+        return this.freelancer.getEmail().equals(freelancerEmail);
+    }
+    public boolean isClientForProject(String clientEmail){
+        return this.client.getEmail().equals(clientEmail);
+    }
+    public Task createNewTask(String taskTitle){
+        Task task=Task.build(taskTitle,this);
+        this.projectTasks.add(task);
+        return task;
+    }
 }

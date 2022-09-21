@@ -45,6 +45,8 @@ samo vo proektite koi se so status ACCEPTED mozi da se dodavaat taskovi
 V i client i freelancer da mozi da CANCEL project
 ako treba da se dodadi status na proekt RATED shto ke bidi od ko ke i clientot i freelancerot se RATENAT 
 
+TASK da cuva reden broj za sortiranje
+
 
 /projects/{projectId}/{name}
 

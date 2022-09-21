@@ -7,6 +7,8 @@ import threed.manager.backend.project.domain.models.ids.TaskId;
 import threed.manager.backend.sharedkernel.domain.base.AbstractEntity;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +21,8 @@ public class Task extends AbstractEntity<TaskId> {
     private TaskStatusEnumeration taskStatus;
     @ManyToOne
     private Project project;
+
+    private LocalDateTime timestamp;
     @JsonIgnoreProperties(value = {"task"})
     @OneToMany(mappedBy="task", fetch=FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> messages;
@@ -38,6 +42,7 @@ public class Task extends AbstractEntity<TaskId> {
         task.project=project;
         task.messages=new HashSet<>();
         task.deliveries=new HashSet<>();
+        task.timestamp=LocalDateTime.now();
         return task;
     }
     public void updateFolderLocation(String folderLocation){
@@ -45,6 +50,12 @@ public class Task extends AbstractEntity<TaskId> {
     }
     public void addMessage(Message message){
         this.messages.add(message);
+    }
+    public void addDelivery(Delivery delivery){
+        this.deliveries.add(delivery);
+    }
+    public void changeStatus(TaskStatusEnumeration taskStatus){
+        this.taskStatus=taskStatus;
     }
 
 }

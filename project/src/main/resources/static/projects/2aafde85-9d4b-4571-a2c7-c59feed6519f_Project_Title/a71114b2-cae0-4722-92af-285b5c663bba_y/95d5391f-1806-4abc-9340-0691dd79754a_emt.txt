@@ -1,0 +1,31 @@
+se kreira maven proekt
+vo nego se dodavaat domenite kako moduli
+za sekoj modul sho se povrzuva so baza vo app.properties se dodava soodvetnata konfiguracija i se postavuva na koja porta ke raboti modulot
+
+vo pom.xml od proektot (ne od modulite) se vnesuvaat site moduli od koi se sostoi proektot
+<modules>
+	<module>shared-kernel</module>
+</modules>
+
+vo sekoj modul shto ke go koristi shared-kernel, vo negoviot pom.xml se dodava
+<dependency> kon shared-kernel
+
+shared-kernel nema main klasa, t.e. ne e aplikacija tuku kako biblioteka za spodeleni resursi
+
+
+@AttributeOverrides({@AttributeOverride(name="name", column=@Column(name="newName"))})
+ova e za preimenuvanje na atributi od objekt shto e @Embeddable
+-------------------------------------------------------------------------
+javax validation
+ordg.hibernate.validator
+
+ova za validiranje na formite so @NotNull i drugi anotacii
+
+repository se pravi samo za agregat root, i site raboti odat preku nego
+-------------------------------------------------------------------------
+za kafka, vo pom.xml od shared-kernel se postavuva dependency
+
+vo app.properties se stava portata na kafka, grupa
+
+eventite vo shared kernel
+publisher interfejsot vo shared kernel a implementaciite vo sekoj ogranicen kontekst kade shto ima potreba

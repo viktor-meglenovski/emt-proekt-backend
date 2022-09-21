@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import threed.manager.backend.project.domain.enumerations.ProjectStatusEnumeration;
+import threed.manager.backend.project.domain.enumerations.TaskStatusEnumeration;
 import threed.manager.backend.project.domain.models.Project;
 import threed.manager.backend.project.domain.models.ProjectAttachment;
 import threed.manager.backend.project.domain.models.Task;
@@ -26,8 +27,6 @@ import static threed.manager.backend.project.config.Constants.userRootPath;
 @Service
 @AllArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
-
-
     private final TaskService taskService;
     private final ProjectRepository projectRepository;
     private final FreelancerRestClient freelancerRestClient;
@@ -115,6 +114,23 @@ public class ProjectServiceImpl implements ProjectService {
     public Task addNewMessageToTask(Project p, String taskId, String email, String role, String content, MultipartFile[] messageAttachments) {
         Task task=p.getProjectTasks().stream().filter(x->x.getId().getId().equals(taskId)).findFirst().get();
         taskService.addMessageToTask(task, email, role, content, messageAttachments);
+        projectRepository.save(p);
+        return task;
+    }
+    @Override
+    public Task addNewDeliveryToTask(Project p, String taskId, String email, String role, String content, MultipartFile[] deliveryAttachments) {
+        Task task=p.getProjectTasks().stream().filter(x->x.getId().getId().equals(taskId)).findFirst().get();
+        taskService.addDeliveryToTask(task, email, role, content, deliveryAttachments);
+        task.changeStatus(TaskStatusEnumeration.DELIVERED);
+        projectRepository.save(p);
+        return task;
+    }
+
+    @Override
+    public Task provideFeedbackForDelivery(Project p, String taskId, String deliveryId, String email, String role, String feedback, boolean accepted) {
+        Task task=p.getProjectTasks().stream().filter(x->x.getId().getId().equals(taskId)).findFirst().get();
+        taskService.provideFeedbackForDelivery(task,deliveryId,email,role,feedback,accepted);
+        task.changeStatus(accepted?TaskStatusEnumeration.ACCEPTED:TaskStatusEnumeration.IN_REVISION);
         projectRepository.save(p);
         return task;
     }

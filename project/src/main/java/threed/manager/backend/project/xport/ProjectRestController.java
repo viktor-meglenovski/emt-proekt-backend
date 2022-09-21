@@ -150,4 +150,39 @@ public class ProjectRestController {
             return projectService.addNewMessageToTask(p, taskId, jws.getBody().get("email").toString(), jws.getBody().get("role").toString(), content, messageAttachments);
         }else throw new NotAuthorisedAccessException();
     }
+    @PostMapping("/addDeliveryToTask")
+    public Task addDeliveryToTask(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                 @RequestParam String projectId,
+                                 @RequestParam String taskId,
+                                 @RequestParam String content,
+                                 @RequestParam("deliveryAttachments") MultipartFile[] deliveryAttachments){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if (p.isFreelancerForProject(jws.getBody().get("email").toString())){
+            return projectService.addNewDeliveryToTask(p, taskId, jws.getBody().get("email").toString(), jws.getBody().get("role").toString(), content, deliveryAttachments);
+        }else throw new NotAuthorisedAccessException();
+    }
+
+    @PostMapping("/provideFeedbackForDelivery")
+    public Task provideFeedbackForDelivery(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                  @RequestParam String projectId,
+                                  @RequestParam String taskId,
+                                  @RequestParam String deliveryId,
+                                  @RequestParam String feedback,
+                                  @RequestParam boolean accepted){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if (p.isClientForProject(jws.getBody().get("email").toString())){
+            return projectService.provideFeedbackForDelivery(p, taskId, deliveryId, jws.getBody().get("email").toString(), jws.getBody().get("role").toString(), feedback,accepted);
+        }else throw new NotAuthorisedAccessException();
+    }
+    @PostMapping("/finishProject")
+    public Project finishProject(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                 @RequestParam String projectId){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if (p.isClientForProject(jws.getBody().get("email").toString())){
+            return projectService.changeStatus(p,ProjectStatusEnumeration.FINISHED);
+        }else throw new NotAuthorisedAccessException();
+    }
 }

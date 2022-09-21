@@ -4,5 +4,6 @@ public enum ProjectStatusEnumeration {
     PROPOSED,
     ACCEPTED,
     CANCELED,
-    FINISHED
+    FINISHED,
+    RATED
 }

@@ -23,6 +23,7 @@ public interface ProjectService {
     Project addNewTask(Project p, String taskTitle);
     Task addNewMessageToTask(Project p, String taskId, String email, String role, String content, MultipartFile[] messageAttachments);
     Task addNewDeliveryToTask(Project p, String taskId, String email, String role, String content, MultipartFile[] deliveryAttachments);
-
     Task provideFeedbackForDelivery(Project p, String taskId, String deliveryId, String email, String role, String feedback, boolean accepted);
+    Project addRatingFromClient(Project p, Integer rating);
+    Project addRatingFromFreelancer(Project p, Integer rating);
 }

@@ -11,10 +11,15 @@ import threed.manager.backend.project.domain.models.Task;
 import threed.manager.backend.project.domain.models.ids.ProjectId;
 import threed.manager.backend.project.domain.repository.ProjectRepository;
 import threed.manager.backend.project.domain.value_objects.AppUser;
+import threed.manager.backend.project.infra.ProjectDomainEventPublisherImpl;
 import threed.manager.backend.project.service.ProjectService;
 import threed.manager.backend.project.service.TaskService;
 import threed.manager.backend.project.xport.rest.ClientRestClient;
 import threed.manager.backend.project.xport.rest.FreelancerRestClient;
+import threed.manager.backend.sharedkernel.domain.events.account.ClientNewAccountCreated;
+import threed.manager.backend.sharedkernel.domain.events.account.FreelancerNewAccountCreated;
+import threed.manager.backend.sharedkernel.domain.events.rating.RateClient;
+import threed.manager.backend.sharedkernel.domain.events.rating.RateFreelancer;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +36,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final FreelancerRestClient freelancerRestClient;
     private final ClientRestClient clientRestClient;
+    private final ProjectDomainEventPublisherImpl domainEventPublisher;
     @Override
     public List<Project> findAllByClientEmail(String email) {
         return projectRepository.findAllByClient_Email(email);
@@ -133,6 +139,30 @@ public class ProjectServiceImpl implements ProjectService {
         task.changeStatus(accepted?TaskStatusEnumeration.ACCEPTED:TaskStatusEnumeration.IN_REVISION);
         projectRepository.save(p);
         return task;
+    }
+
+    @Override
+    public Project addRatingFromClient(Project p, Integer rating) {
+        p.changeClientRating(rating);
+        checkIfBothHasRated(p);
+        projectRepository.save(p);
+        //send event
+        domainEventPublisher.publish(new RateFreelancer(p.getFreelancer().getEmail(),rating));
+        return p;
+    }
+
+    @Override
+    public Project addRatingFromFreelancer(Project p, Integer rating) {
+        p.changeFreelancerRating(rating);
+        checkIfBothHasRated(p);
+        projectRepository.save(p);
+        domainEventPublisher.publish(new RateClient(p.getClient().getEmail(),rating));
+        return p;
+    }
+
+    private void checkIfBothHasRated(Project p){
+        if(p.getClientRating()!=null && p.getFreelancerRating()!=null)
+            p.changeStatus(ProjectStatusEnumeration.RATED);
     }
 
 }

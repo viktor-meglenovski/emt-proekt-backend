@@ -21,6 +21,8 @@ public class Project extends AbstractEntity<ProjectId> {
     @Column(name="projectStatus")
     private ProjectStatusEnumeration status;
     private String folderLocation;
+    private Integer clientRating;
+    private Integer freelancerRating;
 
     @AttributeOverrides({
             @AttributeOverride(name="email", column = @Column(name="client_email")),
@@ -56,6 +58,8 @@ public class Project extends AbstractEntity<ProjectId> {
         p.freelancer=freelancer;
         p.projectTasks=new HashSet<>();
         p.attachments=new HashSet<>();
+        p.clientRating=null;
+        p.freelancerRating=null;
         return p;
     }
     public void changeStatus(ProjectStatusEnumeration newStatus){
@@ -77,5 +81,11 @@ public class Project extends AbstractEntity<ProjectId> {
         Task task=Task.build(taskTitle,this);
         this.projectTasks.add(task);
         return task;
+    }
+    public void changeClientRating(Integer rating){
+        this.clientRating=rating;
+    }
+    public void changeFreelancerRating(Integer rating){
+        this.freelancerRating=rating;
     }
 }

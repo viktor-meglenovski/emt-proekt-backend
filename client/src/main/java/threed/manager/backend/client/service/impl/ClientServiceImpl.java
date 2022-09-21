@@ -29,6 +29,7 @@ public class ClientServiceImpl implements ClientService {
     public Client rateByEmail(String email, int grade) {
         Client client=findByEmail(email);
         client.rateClient(grade);
+        clientRepository.save(client);
         return client;
     }
 

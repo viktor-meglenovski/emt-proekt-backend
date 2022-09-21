@@ -185,4 +185,16 @@ public class ProjectRestController {
             return projectService.changeStatus(p,ProjectStatusEnumeration.FINISHED);
         }else throw new NotAuthorisedAccessException();
     }
+    @PostMapping("/rate")
+    public Project rateProject(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                               @RequestParam String projectId,
+                               @RequestParam int rating){
+        Jws<Claims> jws = JwtValidator.validateToken(token);
+        Project p=projectService.findByProjectId(projectId);
+        if(p.isClientForProject(jws.getBody().get("email").toString())){
+            return projectService.addRatingFromClient(p,rating);
+        }else if (p.isFreelancerForProject(jws.getBody().get("email").toString())){
+            return projectService.addRatingFromFreelancer(p,rating);
+        }else throw new NotAuthorisedAccessException();
+    }
 }

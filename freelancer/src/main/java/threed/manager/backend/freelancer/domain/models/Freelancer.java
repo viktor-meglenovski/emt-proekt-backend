@@ -53,9 +53,7 @@ public class Freelancer {
         }
     }
     public void rateFreelancer(Integer newGrade){
-        List<Integer> existingGrades=this.rating.getGrades();
-        existingGrades.add(newGrade);
-        this.rating=new Rating(existingGrades);
+        this.rating=this.rating.addRating(newGrade);
     }
     public void editNameAndSurname(String name, String surname){
         this.name=name;

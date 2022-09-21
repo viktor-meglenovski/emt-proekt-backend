@@ -10,19 +10,14 @@ import java.util.List;
 @Embeddable
 @Getter
 public class Rating {
-    @Transient
-    private final List<Integer> grades;
-    private final double rating;
+    private final int rating;
     public Rating(){
-        this.grades=new ArrayList<>();
         this.rating=0;
     }
-    public Rating(List<Integer> grades) {
-        this.grades = grades;
-        this.rating=this.calculateRating();
+    public Rating(int rating){
+        this.rating=rating;
     }
-
-    public double calculateRating(){
-        return this.grades.stream().mapToDouble(x->x).sum()/grades.size();
+    public Rating addRating(int newRating){
+        return new Rating(this.rating+newRating);
     }
 }

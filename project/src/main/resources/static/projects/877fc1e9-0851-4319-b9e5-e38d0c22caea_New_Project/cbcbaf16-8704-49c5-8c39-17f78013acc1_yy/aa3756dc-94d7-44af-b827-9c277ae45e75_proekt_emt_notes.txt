@@ -1,0 +1,45 @@
+slikite od linkovanite akaunti se na localhost:8002/images/imeNaSlika
+
+
+DA NE SE ZABORAJ TO ZA CORS ERROR DA SE DODAJ NAD SEKOJ KONTROLER
+
+security 	:8000
+client 		:8001
+freelancer 	:8002
+project		:8003
+
+
+D:\kafka_2.13-3.2.1\bin\windows>zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+D:\kafka_2.13-3.2.1\bin\windows>kafka-server-start.bat ..\..\config\server.properties
+
+
+V ako si freelancer i ako proektot e PROPOSED -> kopcinja ACCEPT (menuva status vo ACCEPTED) i decline (menuva status vo CANCELED)
+V ako si client i ako proektot e PROPOSED -> kopce DECLINE (menuva status vo CANCELED)
+V taskovite mozi da bidat IN PROGRESS, IN REVISION, DELIVERED, FINISHED
+V ako si freelancer i ako proektot e ACCEPTED -> kopce ADD NEW TASK (samo title e dovolno) pocetno statusot e IN PROGRESS
+v endpoints i servisna logika za addMessages, addDeliveries, acceptDelivery, requestRevision
+v formata za DELIVERY e dostapna samo ako TASKOT ima status IN PROGRESS ili IN REVISION
+v formata za KOMENTAR e dostapna samo ako TASKOT ima status IN PROGRESS, IN REVISION ili DELIVERED
+v koga freelancerot pravi DELIVERY se pravi i KOMENTAR so METAPODATOK deka e DELIVERY koj se stava vo CHATOT
+v koga client pravi REQUEST REVISION se pravi i KOMENTAR so METAPODATOK deka e requestnat REVISION koj se stava vo CHATOT
+v koga client pravi ACCEPT DELIVERY se pravi i KOMENTAR so METAPODATOK deka DELIVERY e ACCEPTED i TASKOT stanuva FINISHED
+v komponenti za KOMENTARI i DELIVERIES
+v ako si freelancer i taskot e IN PROGRESS ili IN REVISION -> forma za submitting DELIVERY
+v ako si client i taskot e DELIVERED -> kopcinja REQUEST REVISION (menuva status vo IN REVISION) i ACCEPT (menuva status vo FINISHED)
+v ako e taskot e finished ne mozi da se dodavaat novi KOMENTARI
+v samo vo proektite koi se so status ACCEPTED mozi da se dodavaat taskovi
+V i client i freelancer da mozi da CANCEL project
+v TASK da cuva reden broj za sortiranje
+v ako SITE taskovi se FINISHED, clientot ima kopce END PROJECT (go menuva statusot vo FINISHED)
+
+ako treba da se dodadi status na proekt RATED shto ke bidi od ko ke i clientot i freelancerot se RATENAT 
+ako proektot e FINISHED, i clientot i freelancerot treba da stavat RATING eden na drug. Koga dvata ke go napravat toa statusot na proektot se menuva vo RATED.
+
+
+/projects/{projectId}/{name}
+
+/projects/{projectId}/{taskId}/{name}
+
+/projects/{project folder location}/{task id}/{file name}
+/projects/{project folder location}/{task id}/{delivery id}/{file name}

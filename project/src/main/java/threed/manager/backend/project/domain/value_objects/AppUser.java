@@ -20,12 +20,6 @@ public class AppUser implements ValueObject {
     private final Role role;
 
 
-//    public AppUser(String email,Role role,String name, String surname) {
-//        this.email = email;
-//        this.role=role;
-//        this.name=name;
-//        this.surname=surname;
-//    }
     public AppUser(Role role){
         this.email = "";
         this.role=role;
